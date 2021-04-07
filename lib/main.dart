@@ -21,8 +21,8 @@ class DateSelectionPicker extends StatefulWidget {
 }
 
 class DateSelectionPickerState extends State<DateSelectionPicker> {
-  List<DateTime> _blackoutDateCollection;
-  List<DateTime> _activeDates;
+  List<DateTime> _blackoutDateCollection = <DateTime>[];
+  late List<DateTime> _activeDates;
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class DateSelectionPickerState extends State<DateSelectionPicker> {
       today.add(Duration(days: 30)),
       today.add(Duration(days: 35))
     ];
-    _blackoutDateCollection = <DateTime>[];
     super.initState();
   }
 
@@ -46,42 +45,42 @@ class DateSelectionPickerState extends State<DateSelectionPicker> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
-              child: SfDateRangePicker(
-                view: DateRangePickerView.month,
-                selectionMode: DateRangePickerSelectionMode.single,
-                monthViewSettings: DateRangePickerMonthViewSettings(
-                  blackoutDates: _blackoutDateCollection,
-                ),
-                monthCellStyle: DateRangePickerMonthCellStyle(
-                  blackoutDateTextStyle: TextStyle(
-                      color: Colors.grey, decoration: TextDecoration.lineThrough),
-                ),
-                onViewChanged: viewChanged,
-              ),
-            )
-          ],
-        ));
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Card(
+          margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+          child: SfDateRangePicker(
+            view: DateRangePickerView.month,
+            selectionMode: DateRangePickerSelectionMode.single,
+            monthViewSettings: DateRangePickerMonthViewSettings(
+              blackoutDates: _blackoutDateCollection,
+            ),
+            monthCellStyle: DateRangePickerMonthCellStyle(
+              blackoutDateTextStyle: TextStyle(
+                  color: Colors.grey, decoration: TextDecoration.lineThrough),
+            ),
+            onViewChanged: viewChanged,
+          ),
+        )
+      ],
+    ));
   }
 
   void viewChanged(DateRangePickerViewChangedArgs args) {
     DateTime date;
-    DateTime startDate = args.visibleDateRange.startDate;
-    DateTime endDate = args.visibleDateRange.endDate;
+    DateTime startDate = args.visibleDateRange.startDate!;
+    DateTime endDate = args.visibleDateRange.endDate!;
     List<DateTime> _blackDates = <DateTime>[];
     for (date = startDate;
-    date.isBefore(endDate) || date == endDate;
-    date = date.add(const Duration(days: 1))) {
+        date.isBefore(endDate) || date == endDate;
+        date = date.add(const Duration(days: 1))) {
       if (_activeDates.contains(date)) {
         continue;
       }
 
       _blackDates.add(date);
     }
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       setState(() {
         _blackoutDateCollection = _blackDates;
       });
